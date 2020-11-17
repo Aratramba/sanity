@@ -1,6 +1,6 @@
 import React from 'react'
 import {StringSchemaType} from '@sanity/types'
-import {TextInput, useForwardedRef} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import FormField from 'part:@sanity/components/formfields/default'
 import {useId} from '@reach/auto-id'
 import PatchEvent, {set, unset} from '../PatchEvent'
@@ -11,14 +11,7 @@ const StringInput = React.forwardRef(function StringInput(
   forwardedRef: React.ForwardedRef<HTMLInputElement>
 ) {
   const {value, readOnly, type, markers, level, onFocus, onBlur, onChange, presence} = props
-  const handleChange = React.useCallback(
-    () => onChange(PatchEvent.from(value ? set(value) : unset())),
-    [value, onChange]
-  )
-
-  const ref = useForwardedRef(forwardedRef)
   const inputId = useId()
-
   const validation = markers.filter((marker) => marker.type === 'validation')
   const errors = validation.filter((marker) => marker.level === 'error')
   return (
@@ -33,13 +26,19 @@ const StringInput = React.forwardRef(function StringInput(
       <TextInput
         id={inputId}
         customValidity={errors.length > 0 ? errors[0].item.message : ''}
-        value={value}
-        readOnly={readOnly}
+        value={value || ''}
+        readOnly={Boolean(readOnly)}
         placeholder={type.placeholder}
-        onChange={handleChange}
+        onChange={React.useCallback(
+          (event) => {
+            const inputValue = event.currentTarget.value
+            onChange(PatchEvent.from(inputValue ? set(inputValue) : unset()))
+          },
+          [onChange]
+        )}
         onFocus={onFocus}
         onBlur={onBlur}
-        ref={ref}
+        ref={forwardedRef}
       />
     </FormField>
   )
