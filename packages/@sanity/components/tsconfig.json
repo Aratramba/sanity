@@ -2,10 +2,10 @@
   "extends": "../../../tsconfig",
   "include": ["src"],
   "compilerOptions": {
+    // todo: we need to disable noImplicitAny for as long as @sanity/base doesn't fully pass strict mode.
     "noImplicitAny": false,
     "outDir": "./lib",
     "jsx": "react",
-    "strict": true,
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",
